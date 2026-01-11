@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Rémocra - Organisation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step-card { display: none; }
+        .step-card.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans">
+
+    <div class="max-w-2xl mx-auto py-10 px-4">
+        <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+            <div class="bg-blue-700 p-6 text-white text-center">
+                <h1 class="text-2xl font-bold">Organisation Club Rémocra</h1>
+                <p class="opacity-80">Logistique et convivialité</p>
+            </div>
+
+            <form id="mainForm" class="p-8 space-y-8">
+                
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold border-b pb-2 text-blue-800">1. Votre profil</h2>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Votre SDIS / Structure</label>
+                        <input type="text" id="sdis" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 border focus:ring-blue-500 outline-none" placeholder="Ex: SDIS 75">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold border-b pb-2 text-blue-800">2. Transport</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button type="button" onclick="setTransport('Voiture')" id="btn-car" class="p-4 border-2 rounded-xl hover:border-blue-500 transition flex flex-col items-center">
+                            <span class="text-2xl">🚗</span><span>Voiture</span>
+                        </button>
+                        <button type="button" onclick="setTransport('Train')" id="btn-train" class="p-4 border-2 rounded-xl hover:border-blue-500 transition flex flex-col items-center">
+                            <span class="text-2xl">🚆</span><span>Train / Autre</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="transportType" required>
+
+                    <div id="covoit-choice" class="hidden p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <label id="covoit-label" class="block text-sm font-medium text-blue-900 mb-2"></label>
+                        <select id="covoit-option" class="w-full p-2 rounded border border-blue-300">
+                            <option value="Non">Non</option>
+                            <option value="Oui">Oui, absolument</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold border-b pb-2 text-blue-800">3. Soirée</h2>
+                    <div class="flex items-center p-4 bg-orange-50 rounded-lg border border-orange-200">
+                        <input type="checkbox" id="dinner" class="w-5 h-5 text-orange-600 border-gray-300 rounded">
+                        <label for="dinner" class="ml-3 text-sm font-medium text-orange-900">Je serai présent au dîner à l'État-Major le soir</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl hover:bg-blue-800 shadow-lg transform transition active:scale-95">
+                    Enregistrer ma participation
+                </button>
+            </form>
+
+            <div id="success" class="hidden p-8 text-center space-y-4">
+                <div class="text-6xl text-green-500">✅</div>
+                <h2 class="text-2xl font-bold">C'est noté !</h2>
+                <p id="summaryText" class="text-gray-600"></p>
+                <button onclick="location.reload()" class="text-blue-600 underline text-sm">Modifier ma réponse</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setTransport(type) {
+            document.getElementById('transportType').value = type;
+            const covoitDiv = document.getElementById('covoit-choice');
+            const covoitLabel = document.getElementById('covoit-label');
+            const btnCar = document.getElementById('btn-car');
+            const btnTrain = document.getElementById('btn-train');
+
+            covoitDiv.classList.remove('hidden');
+            
+            if(type === 'Voiture') {
+                covoitLabel.innerText = "Proposez-vous des places de covoiturage ?";
+                btnCar.classList.add('border-blue-600', 'bg-blue-50');
+                btnTrain.classList.remove('border-blue-600', 'bg-blue-50');
+            } else {
+                covoitLabel.innerText = "Cherchez-vous un covoiturage depuis la gare ?";
+                btnTrain.classList.add('border-blue-600', 'bg-blue-50');
+                btnCar.classList.remove('border-blue-600', 'bg-blue-50');
+            }
+        }
+
+        document.getElementById('mainForm').onsubmit = function(e) {
+            e.preventDefault();
+            const data = {
+                sdis: document.getElementById('sdis').value,
+                transport: document.getElementById('transportType').value,
+                covoit: document.getElementById('covoit-option').value,
+                diner: document.getElementById('dinner').checked ? "Présent" : "Absent"
+            };
+
+            document.getElementById('mainForm').classList.add('hidden');
+            document.getElementById('success').classList.remove('hidden');
+            document.getElementById('summaryText').innerText = 
+                `Merci au ${data.sdis}. Transport : ${data.transport} (Covoit: ${data.covoit}). Dîner : ${data.diner}.`;
+            
+            console.log("Données à envoyer au serveur :", data);
+        };
+    </script>
+</body>
+</html>
